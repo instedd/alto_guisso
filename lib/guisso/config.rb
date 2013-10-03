@@ -24,6 +24,10 @@ module Guisso
       "#{url}/oauth2/trusted_token"
     end
 
+    def basic_check_url
+      "#{url}/basic/check"
+    end
+
     def client_id
       @config["client_id"]
     end

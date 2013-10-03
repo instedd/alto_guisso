@@ -36,7 +36,20 @@ module ActionDispatch::Routing
             if user
               sign_in user
             else
-              head :forbidden
+              return head :forbidden unless request.authorization && request.authorization =~ /^Basic (.*)/m
+              email, password = Base64.decode64($1).split(/:/, 2)
+              authorization = Base64.strict_encode64(Guisso.client_id + ":" + Guisso.client_secret)
+
+              client = HTTPClient.new
+              response = client.get Guisso.basic_check_url,
+                {email: email, password: password},
+                {'Authorization' => "Basic " + authorization}
+              if response.ok?
+                user = #{mapping.to_s.capitalize}.find_by_email email
+                sign_in user
+              else
+                head :forbidden
+              end
             end
           end
 
