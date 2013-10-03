@@ -15,11 +15,11 @@ module ActionDispatch::Routing
             end
           end
 
-          def authenticate_#{mapping}_with_guisso!
+          def authenticate_#{mapping}_with_guisso!(*args)
             if current_#{mapping}
               guisso_email = cookies[:guisso]
               if guisso_email == current_#{mapping}.email
-                authenticate_#{mapping}_without_guisso!
+                authenticate_#{mapping}_without_guisso!(*args)
               else
                 sign_out current_#{mapping}
                 redirect_to_guisso

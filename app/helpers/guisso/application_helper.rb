@@ -8,12 +8,12 @@ module Guisso
       end
     end
 
-    def guisso_sign_out_path
-      Guisso.sign_out_url
-    end
-
-    def link_to_guisso_sign_out(text, options = {})
-      link_to text, guisso_sign_out_path, options.merge(method: :delete)
+    def guisso_sign_out_path_for(mapping, options = {})
+      if Guisso.enabled?
+        "#{Guisso.sign_out_url}?#{options.to_query}"
+      else
+        destroy_session_path(mapping)
+      end
     end
   end
 end

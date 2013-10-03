@@ -12,7 +12,8 @@ class Guisso::Railtie < Rails::Railtie
         Devise.setup do |config|
           config.omniauth :open_id, store: OpenID::Store::Filesystem.new("#{Rails.root}/tmp"), name: 'instedd', identifier: Guisso.openid_url, require: 'omniauth-openid'
         end
-      rescue LoadError
+      rescue LoadError => ex
+        puts "Warning: failed loading. #{ex}"
       end
 
       require 'rack/oauth2'
