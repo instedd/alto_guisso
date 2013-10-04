@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Guisso::VERSION
   spec.authors       = ["Ary Borenszweig", "Juan Wajnerman"]
   spec.email         = ["aborenszweig@manas.com.ar", "jwajnerman@manas.com.ar"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
-  spec.homepage      = ""
+  spec.description   = %q{Use Guisso}
+  spec.summary       = %q{Alto Guisso allows connecting your application with Guisso (Instedd's Single Sign On)}
+  spec.homepage      = "https://bitbucket.org/instedd/alto_guisso"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
