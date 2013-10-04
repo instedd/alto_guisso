@@ -11,7 +11,7 @@ It provides two funcionalities:
 
 Add this line to your application's Gemfile:
 
-    gem 'alto_guisso'
+    gem 'alto_guisso', git: "https://bitbucket.org/instedd/alto_guisso.git"
 
 And then execute:
 
@@ -32,6 +32,12 @@ Or install it yourself as:
 ## Usage
 
 ### Allow users to sign in with Guisso as an OpenId server
+
+* Add `omniauth` and `omniauth-openid` to your Gemfile:
+
+        gem "omniauth"
+        gem "omniauth-openid"
+
 
 * Add `:omniauthable` to your devise Model
 
