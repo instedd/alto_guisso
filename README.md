@@ -17,10 +17,6 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
-
-    $ gem install alto_guisso
-
 ## Dependencies
 
 * devise
@@ -33,20 +29,24 @@ Or install it yourself as:
 
 ### Allow users to sign in with Guisso as an OpenId server
 
-* Add `omniauth` and `omniauth-openid` to your Gemfile:
+* Require `openid` and some other files:
 
-        gem "omniauth"
-        gem "omniauth-openid"
-
+        # config/application.rb
+        require "openid"
+        require 'openid/extensions/sreg'
+        require 'openid/extensions/pape'
+        require 'openid/store/filesystem'
 
 * Add `:omniauthable` to your devise Model
 
+        # app/models/user.rb
         class User < ActiveRecord::Base
           devise :omniauthable, ...
         end
 
 * Create a model to store the OpenId identities:
 
+        # app/models/identity.rb
         class Identity < ActiveRecord::Base
           # t.integer :user_id
           # t.string :provider
@@ -55,6 +55,7 @@ Or install it yourself as:
           belongs_to :user
         end
 
+        # app/models/user.rb
         class User < ActiveRecord::Base
           has_many :identities, dependent: :destroy
         end
@@ -124,3 +125,11 @@ Or install it yourself as:
 
         # After:
         link_to "Sign out", guisso_sign_out_path_for(:user, after_sign_out_url: root_url), method: :delete
+        
+### Allow OAuth and Basic authentication with Guisso credentials.
+
+In a controller that provides an API endpoint:
+
+        class MyApiController < ApplicationController
+          before_filter :authenticate_api_user!
+        end
