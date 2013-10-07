@@ -5,7 +5,10 @@ module ActionDispatch::Routing
         mapping = Devise.mappings[mapping].name
 
         ActionController::Base.class_eval <<-METHODS, __FILE__, __LINE__ + 1
-          before_filter :check_guisso_cookie
+          unless method_defined?(:check_guisso_cookie)
+            before_filter :check_guisso_cookie
+          end
+
           def check_guisso_cookie
             guisso_email = cookies[:guisso]
             if current_#{mapping} && current_#{mapping}.email != guisso_email
