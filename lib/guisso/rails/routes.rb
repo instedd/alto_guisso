@@ -28,33 +28,33 @@ module ActionDispatch::Routing
                 redirect_to_guisso
               end
             else
-              redirect_to_guisso
-            end
-          end
-          alias_method_chain :authenticate_#{mapping}!, :guisso
-
-          def authenticate_api_#{mapping}!
-            email = env["guisso.user"]
-            user = #{mapping.to_s.capitalize}.find_by_email email
-            if user
-              sign_in user
-            else
-              return head :forbidden unless request.authorization && request.authorization =~ /^Basic (.*)/m
-              email, password = Base64.decode64($1).split(/:/, 2)
-              authorization = Base64.strict_encode64(Guisso.client_id + ":" + Guisso.client_secret)
-
-              client = HTTPClient.new
-              response = client.get Guisso.basic_check_url,
-                {email: email, password: password},
-                {'Authorization' => "Basic " + authorization}
-              if response.ok?
-                user = #{mapping.to_s.capitalize}.find_by_email email
+              email = env["guisso.user"]
+              user = #{mapping.to_s.capitalize}.find_by_email email
+              if user
                 sign_in user
               else
-                head :forbidden
+                if request.authorization
+                  return head :forbidden unless request.authorization =~ /^Basic (.*)/m
+                  email, password = Base64.decode64($1).split(/:/, 2)
+                  authorization = Base64.strict_encode64(Guisso.client_id + ":" + Guisso.client_secret)
+
+                  client = HTTPClient.new
+                  response = client.get Guisso.basic_check_url,
+                    {email: email, password: password},
+                    {'Authorization' => "Basic " + authorization}
+                  if response.ok?
+                    user = #{mapping.to_s.capitalize}.find_by_email email
+                    sign_in user
+                  else
+                    head :forbidden
+                  end
+                else
+                  redirect_to_guisso
+                end
               end
             end
           end
+          alias_method_chain :authenticate_#{mapping}!, :guisso
 
           def redirect_to_guisso
             redirect_to omniauth_authorize_path("#{mapping}", "instedd")

@@ -51,7 +51,7 @@ And then execute:
           # t.integer :user_id
           # t.string :provider
           # t.string :token
-     
+
           belongs_to :user
         end
 
@@ -114,7 +114,7 @@ And then execute:
 
         # Before:
         link_to "Sign in", new_user_session_path
-        
+
         # After:
         link_to "Sign in", guisso_sign_in_path_for(:user)
 
@@ -125,11 +125,13 @@ And then execute:
 
         # After:
         link_to "Sign out", guisso_sign_out_path_for(:user, after_sign_out_url: root_url), method: :delete
-        
+
 ### Allow OAuth and Basic authentication with Guisso credentials.
 
 In a controller that provides an API endpoint:
 
         class MyApiController < ApplicationController
-          before_filter :authenticate_api_user!
+          before_filter :authenticate_user!
         end
+
+That is, you don't need to change anything.
