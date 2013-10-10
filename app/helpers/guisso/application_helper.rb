@@ -23,5 +23,9 @@ module Guisso
         destroy_session_path(mapping)
       end
     end
+
+    def guisso_settings_path
+      Guisso.settings_url
+    end
   end
 end

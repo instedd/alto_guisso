@@ -20,6 +20,10 @@ module Guisso
       "#{url}/users/sign_out"
     end
 
+    def settings_url
+      "#{url}/users/edit"
+    end
+
     def trusted_token_url
       "#{url}/oauth2/trusted_token"
     end
