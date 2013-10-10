@@ -11,7 +11,8 @@ It provides two funcionalities:
 
 Add this line to your application's Gemfile:
 
-    gem 'alto_guisso', git: "https://bitbucket.org/instedd/alto_guisso.git"
+    gem 'rack-oauth2', git: "https://github.com/manastech/rack-oauth2.git", branch: 'master'
+    gem 'alto_guisso', git: "https://bitbucket.org/instedd/alto_guisso.git", branch: 'master'
 
 And then execute:
 

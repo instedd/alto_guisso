@@ -8,6 +8,14 @@ module Guisso
       end
     end
 
+    def guisso_sign_up_path_for(mapping)
+      if Guisso.enabled?
+        omniauth_authorize_path(mapping, :instedd, signup: true)
+      else
+        new_registration_path mapping
+      end
+    end
+
     def guisso_sign_out_path_for(mapping, options = {})
       if Guisso.enabled?
         "#{Guisso.sign_out_url}?#{options.to_query}"

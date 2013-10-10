@@ -35,6 +35,36 @@ class Guisso::Railtie < Rails::Railtie
         req.env["guisso.user"] = mac_body['user']
       end
     end
+
+    module ::Guisso
+      module OpenID
+        class Extension < ::OpenID::Extension
+          NS_URI = "http://instedd.org/guisso"
+
+          def initialize(args)
+            @ns_uri = NS_URI
+            @ns_alias = "guisso"
+            @args = args
+          end
+
+          def get_extension_args
+            @args
+          end
+        end
+      end
+    end
+
+    class ::Rack::OpenID
+      def open_id_redirect_url_with_guisso(req, oidreq, trust_root, return_to, method, immediate)
+        if Guisso.enabled?
+          if req.params['signup']
+            oidreq.add_extension(Guisso::OpenID::Extension.new signup: "true")
+          end
+        end
+        open_id_redirect_url_without_guisso(req, oidreq, trust_root, return_to, method, immediate)
+      end
+      alias_method_chain :open_id_redirect_url, :guisso
+    end
   end
 
   config.to_prepare do
