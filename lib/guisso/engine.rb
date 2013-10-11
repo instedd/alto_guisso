@@ -1,7 +1,7 @@
 require_relative "rails/routes"
 require_relative "../../app/helpers/guisso/application_helper"
 
-class Guisso::Engine < Rails::Engine
+class Guisso::Railtie < Rails::Railtie
   initializer "guisso.initializer" do |app|
     Guisso.setup!
 
@@ -34,39 +34,39 @@ class Guisso::Engine < Rails::Engine
 
         req.env["guisso.user"] = mac_body['user']
       end
-    end
 
-    module ::Guisso
-      module OpenID
-        class Extension < ::OpenID::Extension
-          NS_URI = "http://instedd.org/guisso"
+      module ::Guisso
+        module OpenID
+          class Extension < ::OpenID::Extension
+            NS_URI = "http://instedd.org/guisso"
 
-          def initialize(args)
-            @ns_uri = NS_URI
-            @ns_alias = "guisso"
-            @args = args
-          end
+            def initialize(args)
+              @ns_uri = NS_URI
+              @ns_alias = "guisso"
+              @args = args
+            end
 
-          def get_extension_args
-            @args
+            def get_extension_args
+              @args
+            end
           end
         end
       end
-    end
 
-    class ::Rack::OpenID
-      def open_id_redirect_url_with_guisso(req, oidreq, trust_root, return_to, method, immediate)
-        if Guisso.enabled?
+      class ::Rack::OpenID
+        def open_id_redirect_url_with_guisso(req, oidreq, trust_root, return_to, method, immediate)
           if req.params['signup']
             oidreq.add_extension(Guisso::OpenID::Extension.new signup: "true")
           end
+          open_id_redirect_url_without_guisso(req, oidreq, trust_root, return_to, method, immediate)
         end
-        open_id_redirect_url_without_guisso(req, oidreq, trust_root, return_to, method, immediate)
+        alias_method_chain :open_id_redirect_url, :guisso
       end
-      alias_method_chain :open_id_redirect_url, :guisso
     end
   end
+end
 
+class Guisso::Engine < Rails::Engine
   config.to_prepare do
     ApplicationController.helper Guisso::ApplicationHelper
   end
