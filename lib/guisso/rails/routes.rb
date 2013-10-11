@@ -11,21 +11,25 @@ module ActionDispatch::Routing
 
           def check_guisso_cookie
             guisso_email = cookies[:guisso]
-            if current_#{mapping} && current_#{mapping}.email != guisso_email
-              sign_out current_#{mapping}
-            elsif !current_#{mapping} && guisso_email.present?
-              redirect_to_guisso
+            if guisso_email
+              if current_#{mapping} && current_#{mapping}.email != guisso_email
+                sign_out current_#{mapping}
+              elsif !current_#{mapping} && guisso_email.present? && guisso_email != "logout"
+                redirect_to_guisso
+              end
             end
           end
 
           def authenticate_#{mapping}_with_guisso!(*args)
             if current_#{mapping}
               guisso_email = cookies[:guisso]
-              if guisso_email == current_#{mapping}.email
-                authenticate_#{mapping}_without_guisso!(*args)
-              else
-                sign_out current_#{mapping}
-                redirect_to_guisso
+              if guisso_email
+                if guisso_email == current_#{mapping}.email
+                  authenticate_#{mapping}_without_guisso!(*args)
+                else
+                  sign_out current_#{mapping}
+                  redirect_to_guisso
+                end
               end
             else
               email = env["guisso.user"]
@@ -54,10 +58,13 @@ module ActionDispatch::Routing
               end
             end
           end
-          alias_method_chain :authenticate_#{mapping}!, :guisso
+
+          unless method_defined?(:authenticate_#{mapping}_without_guisso!)
+            alias_method_chain :authenticate_#{mapping}!, :guisso
+          end
 
           def redirect_to_guisso
-            redirect_to omniauth_authorize_path("#{mapping}", "instedd")
+            redirect_to #{mapping}_omniauth_authorize_path(:instedd)
           end
         METHODS
       else

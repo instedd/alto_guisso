@@ -1,7 +1,7 @@
 require_relative "rails/routes"
 require_relative "../../app/helpers/guisso/application_helper"
 
-class Guisso::Railtie < Rails::Railtie
+class Guisso::Engine < Rails::Engine
   initializer "guisso.initializer" do |app|
     Guisso.setup!
 
