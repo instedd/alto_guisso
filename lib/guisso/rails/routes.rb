@@ -69,7 +69,7 @@ module ActionDispatch::Routing
         METHODS
       else
         ActionController::Base.class_eval <<-METHODS, __FILE__, __LINE__ + 1
-          def authenticate_api_#{mapping}!
+          def authenticate_#{mapping}_without_guisso!
             authenticate_#{mapping}!
           end
         METHODS
