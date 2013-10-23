@@ -25,42 +25,49 @@ module ActionDispatch::Routing
               guisso_email = cookies[:guisso]
               if guisso_email
                 if guisso_email == current_#{mapping}.email
-                  authenticate_#{mapping}_without_guisso!(*args)
+                  return authenticate_#{mapping}_without_guisso!(*args)
                 else
                   sign_out current_#{mapping}
-                  redirect_to_guisso
+                  return redirect_to_guisso
                 end
               end
+              sign_in current_#{mapping}
+            elsif params[:format] && params[:format] != :html
+              head :unauthorized
             else
-              email = env["guisso.user"]
-              user = #{mapping.to_s.capitalize}.find_by_email email
-              if user
-                sign_in user
-              else
-                if request.authorization
-                  return head :forbidden unless request.authorization =~ /^Basic (.*)/m
-                  email, password = Base64.decode64($1).split(/:/, 2)
-                  authorization = Base64.strict_encode64(Guisso.client_id + ":" + Guisso.client_secret)
-
-                  client = HTTPClient.new
-                  response = client.get Guisso.basic_check_url,
-                    {email: email, password: password},
-                    {'Authorization' => "Basic " + authorization}
-                  if response.ok?
-                    user = #{mapping.to_s.capitalize}.find_by_email email
-                    sign_in user
-                  else
-                    head :forbidden
-                  end
-                else
-                  redirect_to_guisso
-                end
-              end
+              redirect_to_guisso
             end
           end
 
           unless method_defined?(:authenticate_#{mapping}_without_guisso!)
             alias_method_chain :authenticate_#{mapping}!, :guisso
+          end
+
+          def current_#{mapping}_with_guisso
+            @current_#{mapping} ||= begin
+              if current_#{mapping}_without_guisso
+                current_#{mapping}_without_guisso
+              else
+                email = env["guisso.user"]
+                user = #{mapping.to_s.capitalize}.find_by_email email
+                if user
+                  user
+                elsif request.authorization && request.authorization =~ /^Basic (.*)/m
+                  email, password = Base64.decode64($1).split(/:/, 2)
+                  if Guisso.valid_credentials?(email, password)
+                    #{mapping.to_s.capitalize}.find_by_email email
+                  else
+                    nil
+                  end
+                else
+                  nil
+                end
+              end
+            end
+          end
+
+          unless method_defined?(:current_#{mapping}_without_guisso)
+            alias_method_chain :current_#{mapping}, :guisso
           end
 
           def redirect_to_guisso
