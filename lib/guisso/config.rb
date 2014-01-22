@@ -1,3 +1,5 @@
+require "uri"
+
 module Guisso
   class << self
     def setup!
@@ -10,6 +12,10 @@ module Guisso
 
     def url
       @config["url"]
+    end
+
+    def uri
+      URI.parse url
     end
 
     def openid_url

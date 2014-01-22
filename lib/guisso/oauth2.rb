@@ -25,4 +25,17 @@ module Guisso
 
     token_body['user']
   end
+
+  def self.generate_bearer_token(user_email)
+    uri = Guisso.uri
+    client = Rack::OAuth2::Client.new(
+      :identifier => Guisso.client_id,
+      :secret => Guisso.client_secret,
+      :host => uri.host,
+      :port => uri.port,
+      :scheme => uri.scheme,
+    )
+    client.scope = %W(user=#{user_email} token_type=bearer never_expires=true)
+    client.access_token!.access_token
+  end
 end
