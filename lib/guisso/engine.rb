@@ -18,21 +18,7 @@ class Guisso::Railtie < Rails::Railtie
 
       require 'rack/oauth2'
       app.middleware.use Rack::OAuth2::Server::Resource::MAC, 'Rack::OAuth2' do |req|
-        client = HTTPClient.new
-        body = client.get_content Guisso.trusted_token_url,
-                identifier: Guisso.client_id,
-                secret: Guisso.client_secret,
-                token: req.access_token
-        mac_body = JSON.parse body
-
-        mac_token = Rack::OAuth2::AccessToken::MAC.new(
-          access_token: req.access_token,
-          mac_key: mac_body['mac_key'],
-          mac_algorithm: mac_body['mac_algorithm'],
-        )
-        mac_token.verify!(req)
-
-        req.env["guisso.user"] = mac_body['user']
+        req.env["guisso.oauth2.req"] = req
       end
 
       module ::Guisso

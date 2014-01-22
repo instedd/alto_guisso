@@ -43,35 +43,29 @@ module ActionDispatch::Routing
             alias_method_chain :authenticate_#{mapping}!, :guisso
           end
 
-          def current_#{mapping}_with_guisso
-            @current_#{mapping} ||= begin
-              if current_#{mapping}_without_guisso
-                current_#{mapping}_without_guisso
-              else
-                email = env["guisso.user"]
-                user = #{mapping.to_s.capitalize}.find_by_email email
-                if user
-                  user
-                elsif request.authorization && request.authorization =~ /^Basic (.*)/m
-                  email, password = Base64.decode64($1).split(/:/, 2)
-                  if Guisso.valid_credentials?(email, password)
-                    #{mapping.to_s.capitalize}.find_by_email email
-                  else
-                    nil
-                  end
-                else
-                  nil
-                end
-              end
-            end
-          end
-
-          unless method_defined?(:current_#{mapping}_without_guisso)
-            alias_method_chain :current_#{mapping}, :guisso
-          end
-
           def redirect_to_guisso
             redirect_to #{mapping}_omniauth_authorize_path(:instedd)
+          end
+
+          def authenticate_api_#{mapping}!
+            return if current_#{mapping}
+
+            if (req = env["guisso.oauth2.req"])
+              email = Guisso.validate_oauth2_request(req)
+              user = #{mapping.to_s.capitalize}.find_by_email email
+              if user
+                @current_#{mapping} = user
+                return
+              end
+            elsif request.authorization && request.authorization =~ /^Basic (.*)/m
+              email, password = Base64.decode64($1).split(/:/, 2)
+              if Guisso.valid_credentials?(email, password)
+                @current_#{mapping} = #{mapping.to_s.capitalize}.find_by_email email
+                return
+              end
+            end
+
+            head :unauthorized
           end
         METHODS
       else
