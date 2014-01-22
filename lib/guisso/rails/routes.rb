@@ -52,10 +52,12 @@ module ActionDispatch::Routing
 
             if (req = env["guisso.oauth2.req"])
               email = Guisso.validate_oauth2_request(req)
-              user = #{mapping.to_s.capitalize}.find_by_email email
-              if user
-                @current_#{mapping} = user
-                return
+              if email
+                user = #{mapping.to_s.capitalize}.find_by_email email
+                if user
+                  @current_#{mapping} = user
+                  return
+                end
               end
             elsif request.authorization && request.authorization =~ /^Basic (.*)/m
               email, password = Base64.decode64($1).split(/:/, 2)

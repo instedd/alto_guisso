@@ -17,6 +17,9 @@ class Guisso::Railtie < Rails::Railtie
       end
 
       require 'rack/oauth2'
+      app.middleware.use Rack::OAuth2::Server::Resource::Bearer, 'Rack::OAuth2' do |req|
+        req.env["guisso.oauth2.req"] = req
+      end
       app.middleware.use Rack::OAuth2::Server::Resource::MAC, 'Rack::OAuth2' do |req|
         req.env["guisso.oauth2.req"] = req
       end
