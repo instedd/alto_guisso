@@ -75,6 +75,10 @@ module ActionDispatch::Routing
           def authenticate_#{mapping}_without_guisso!
             authenticate_#{mapping}!
           end
+
+          def authenticate_api_#{mapping}!
+            authenticate_#{mapping}!
+          end
         METHODS
       end
     end
