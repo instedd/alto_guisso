@@ -38,6 +38,10 @@ module Guisso
       "#{url}/basic/check"
     end
 
+    def admin_tokens_url
+      "#{url}/access_tokens"
+    end
+
     def client_id
       @config["client_id"]
     end
