@@ -39,8 +39,25 @@ module ActionDispatch::Routing
             end
           end
 
+          def current_#{mapping}_with_guisso
+            unless @currrent_#{mapping}
+              if request.authorization && request.authorization =~ /^Basic (.*)/m
+                email, password = Base64.decode64($1).split(/:/, 2)
+                if Guisso.valid_credentials?(email, password)
+                  @current_#{mapping} = #{mapping.to_s.capitalize}.find_by_email email
+                end
+              end
+            end
+
+            @current_#{mapping} ||= current_#{mapping}_without_guisso
+          end
+
           unless method_defined?(:authenticate_#{mapping}_without_guisso!)
             alias_method_chain :authenticate_#{mapping}!, :guisso
+          end
+
+          unless method_defined?(:current_#{mapping}_without_guisso)
+            alias_method_chain :current_#{mapping}, :guisso
           end
 
           def redirect_to_guisso
