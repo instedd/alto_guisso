@@ -65,7 +65,7 @@ module ActionDispatch::Routing
           end
 
           def authenticate_api_#{mapping}!
-            return if current_#{mapping}
+            return if @current_#{mapping}
 
             if (req = env["guisso.oauth2.req"])
               email = Guisso.validate_oauth2_request(req)
@@ -83,6 +83,9 @@ module ActionDispatch::Routing
                 return
               end
             end
+
+            # try to authenticate using other methods defined in current_#{mapping}
+            return if current_#{mapping}
 
             head :unauthorized
           end
