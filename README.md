@@ -68,6 +68,7 @@ And then execute:
 
         # app/controllers/omniauth_callbacks_controller.rb
         class OmniauthCallbacksController < Devise::OmniauthCallbacksController
+          skip_before_action :verify_authenticity_token
           skip_before_filter :check_guisso_cookie
 
           def instedd
