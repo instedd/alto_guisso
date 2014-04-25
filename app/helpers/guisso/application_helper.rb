@@ -26,8 +26,12 @@ module Guisso
       end
     end
 
-    def guisso_settings_path
-      Guisso.settings_url
+    def guisso_settings_path(mapping)
+      if Guisso.enabled?
+         Guisso.settings_url
+      else
+        edit_registration_path(mapping)
+      end
     end
   end
 end
