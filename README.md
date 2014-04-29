@@ -176,9 +176,9 @@ That is, you don't need to change anything.
 
 Create local links for your projects:
 
-# /etc/hosts
-127.0.0.1 my-verboice.instedd.org (the project in which you want to include SSO)
-127.0.0.1 my-guisso.instedd.org
+        # /etc/hosts
+        127.0.0.1 my-verboice.instedd.org (the project in which you want to include SSO)
+        127.0.0.1 my-guisso.instedd.org
 
 The domains need to be the same, and need to be "instedd.org".
 
