@@ -14,17 +14,17 @@ Add this line to your application's Gemfile:
     gem 'rack-oauth2', git: "https://github.com/manastech/rack-oauth2.git", branch: 'master'
     gem 'alto_guisso', git: "https://bitbucket.org/instedd/alto_guisso.git", branch: 'master'
 
-And then execute:
-
-    $ bundle
-
-## Dependencies
+And this ones if you are missing any of them:
 
 * devise
 * ruby-openid
 * rack-oauth2
 * omniauth
 * omniauth-openid
+
+And then execute:
+
+    $ bundle
 
 ## Usage
 
@@ -45,14 +45,22 @@ And then execute:
           devise :omniauthable, ...
         end
 
-* Create a model to store the OpenId identities:
+* Create a table and a model to store the OpenId identities:
+
+        class CreateIdentity < ActiveRecord::Migration
+          def change
+            create_table :identities do |t|
+              t.integer :user_id
+              t.string :provider
+              t.string :token
+
+              t.timestamps
+            end
+          end
+        end
 
         # app/models/identity.rb
         class Identity < ActiveRecord::Base
-          # t.integer :user_id
-          # t.string :provider
-          # t.string :token
-
           belongs_to :user
         end
 
@@ -88,12 +96,12 @@ And then execute:
             else
               attributes = yield auth
 
-              attributes[:confirmed_at] = Time.now
-
               user = User.find_by_email(attributes[:email])
               unless user
                 password = Devise.friendly_token
-                user = User.create!(attributes.merge(password: password, password_confirmation: password))
+                user = User.new(attributes.merge(password: password, password_confirmation: password))
+                user.confirmed_at = Time.now
+                user.save!
               end
               user.identities.create! provider: auth['provider'], token: auth['uid']
             end
@@ -128,12 +136,55 @@ And then execute:
         # After:
         link_to "Sign out", guisso_sign_out_path_for(:user, after_sign_out_url: root_url), method: :delete
 
+* Change the settings paths to use Guisso:
+
+        # Before:
+        link_to 'Settings', edit_user_registration_path
+
+        # After:
+        link_to 'Settings', guisso_settings_path(:user)
+
+* Change the sign up paths to use Guisso:
+
+        # Before:
+        link_to "Create account", new_user_registration_path
+
+        # After:
+        link_to "Create account", guisso_sign_up_path_for(:user)
+
+* Add the Guisso configuration file:
+
+        # config/guisso.yml
+        enabled: true
+        url: http://my-guisso.instedd.org:3001
+        client_id:
+        client_secret:
+
+
 ### Allow OAuth and Basic authentication with Guisso credentials.
 
 In a controller that provides an API endpoint:
 
         class MyApiController < ApplicationController
-          before_filter :authenticate_user!
+          before_filter :authenticate_api_user!
         end
 
 That is, you don't need to change anything.
+
+
+## Running locally
+
+Create local links for your projects:
+
+# /etc/hosts
+127.0.0.1 my-verboice.instedd.org (the project in which you want to include SSO)
+127.0.0.1 my-guisso.instedd.org
+
+The domains need to be the same, and need to be "instedd.org".
+
+Remember to update the url setting in your guisso.yml with this name and the port in which you are running your local version of Guisso.
+
+## Migrating Users
+
+Check out the instedd/guisso repository to find a rake task for migrating your application's existing users.
+
