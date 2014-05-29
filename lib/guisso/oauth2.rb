@@ -1,13 +1,15 @@
 module Guisso
   def self.validate_oauth2_request(req)
-    response = HTTPClient.new.get Guisso.trusted_token_url,
-            identifier: Guisso.client_id,
-            secret: Guisso.client_secret,
-            token: req.access_token
+    token_body = Rails.cache.fetch(req.access_token, expires_in: 60) do
+      response = HTTPClient.new.get Guisso.trusted_token_url,
+              identifier: Guisso.client_id,
+              secret: Guisso.client_secret,
+              token: req.access_token
 
-    return nil unless response.status == 200
+      return nil unless response.status == 200
 
-    token_body = JSON.parse response.body
+      JSON.parse response.body
+    end
 
     case req
     when Rack::OAuth2::Server::Resource::Bearer::Request
