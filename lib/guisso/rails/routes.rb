@@ -70,16 +70,13 @@ module ActionDispatch::Routing
             if (req = env["guisso.oauth2.req"])
               email = Guisso.validate_oauth2_request(req)
               if email
-                user = #{mapping.to_s.capitalize}.find_by_email email
-                if user
-                  @current_#{mapping} = user
-                  return
-                end
+                @current_#{mapping} = find_or_create_user(email)
+                return
               end
             elsif request.authorization && request.authorization =~ /^Basic (.*)/m
               email, password = Base64.decode64($1).split(/:/, 2)
               if Guisso.valid_credentials?(email, password)
-                @current_#{mapping} = #{mapping.to_s.capitalize}.find_by_email email
+                @current_#{mapping} = find_or_create_user(email)
                 return
               end
             end
@@ -88,6 +85,16 @@ module ActionDispatch::Routing
             return if current_#{mapping}
 
             head :unauthorized
+          end
+
+          def find_or_create_user(email)
+            user = #{mapping.to_s.capitalize}.find_or_create_by_email(email)
+            if user.new_record?
+              user.confirmed_at = Time.now
+              user.password = Devise.friendly_token
+              user.save!
+            end
+            user
           end
         METHODS
       else
