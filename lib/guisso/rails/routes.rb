@@ -11,10 +11,10 @@ module ActionDispatch::Routing
 
           def check_guisso_cookie
             guisso_email = cookies[:guisso]
-            if guisso_email
-              if current_#{mapping} && current_#{mapping}.email != guisso_email
-                sign_out current_#{mapping}
-              elsif !current_#{mapping} && guisso_email.present? && guisso_email != "logout"
+            if guisso_email.present?
+              if guisso_email == "logout"
+                sign_out current_#{mapping} if current_#{mapping}
+              elsif !current_#{mapping} || guisso_email != current_#{mapping}.email
                 redirect_to_guisso
               end
             end
