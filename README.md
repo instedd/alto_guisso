@@ -128,14 +128,6 @@ And then execute:
         # After:
         link_to "Sign in", guisso_sign_in_path_for(:user)
 
-* Change the sign out paths to use Guisso:
-
-        # Before:
-        link_to "Sign Out", destroy_user_session_path, method: :delete
-
-        # After:
-        link_to "Sign out", guisso_sign_out_path_for(:user, after_sign_out_url: root_url), method: :delete
-
 * Change the settings paths to use Guisso:
 
         # Before:
