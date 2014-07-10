@@ -19,11 +19,8 @@ module Guisso
     end
 
     def guisso_sign_out_path_for(mapping, options = {})
-      if Guisso.enabled?
-        "#{Guisso.sign_out_url}?#{options.to_query}"
-      else
-        destroy_session_path(mapping)
-      end
+      ActiveSupport::Deprecation.warn "Replace calls to 'guisso_sign_out_path_for' with 'destroy_session_path'"
+      destroy_session_path(mapping)
     end
 
     def guisso_settings_path(mapping)
