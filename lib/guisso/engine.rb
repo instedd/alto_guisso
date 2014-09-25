@@ -62,6 +62,8 @@ class Guisso::Engine < Rails::Engine
     class ::ApplicationController
       def after_sign_out_path_for_with_guisso(resource)
         return_path = after_sign_out_path_for_without_guisso(resource)
+        return return_path unless Guisso.enabled?
+
         return_url = "#{request.protocol}#{request.host_with_port.sub(/:80$/,"")}/#{return_path.sub(/^\//,"")}"
         options = { after_sign_out_url: return_url }
         "#{Guisso.sign_out_url}?#{options.to_query}"
