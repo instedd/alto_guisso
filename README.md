@@ -11,8 +11,8 @@ It provides two funcionalities:
 
 Add this line to your application's Gemfile:
 
-    gem 'rack-oauth2', git: "https://github.com/manastech/rack-oauth2.git", branch: 'master'
-    gem 'alto_guisso', git: "https://bitbucket.org/instedd/alto_guisso.git", branch: 'master'
+    gem 'rack-oauth2', github: "manastech/rack-oauth2", branch: 'master'
+    gem 'alto_guisso', github: "instedd/alto_guisso", branch: 'master'
 
 And this ones if you are missing any of them:
 
@@ -47,7 +47,7 @@ And then execute:
 
 * Create a table and a model to store the OpenId identities:
 
-        class CreateIdentity < ActiveRecord::Migration
+        class CreateIdentities < ActiveRecord::Migration
           def change
             create_table :identities do |t|
               t.integer :user_id

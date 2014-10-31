@@ -1,5 +1,6 @@
 require_relative "rails/routes"
 require_relative "../../app/helpers/guisso/application_helper"
+require 'openid/store/filesystem'
 
 class Guisso::Railtie < Rails::Railtie
   initializer "guisso.initializer" do |app|
