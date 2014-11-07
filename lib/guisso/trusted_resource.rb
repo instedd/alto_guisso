@@ -25,6 +25,10 @@ module Guisso
       @token.get absolute_url(path)
     end
 
+    def post(path, body, &block)
+      @token.post absolute_url(path), body: body, &block
+    end
+
     def absolute_url(path)
       @uri + path
     end
