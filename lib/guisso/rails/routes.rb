@@ -60,8 +60,8 @@ module ActionDispatch::Routing
             alias_method_chain :current_#{mapping}, :guisso
           end
 
-          def redirect_to_guisso
-            redirect_to #{mapping}_omniauth_authorize_path(:instedd)
+          def redirect_to_guisso(*args)
+            redirect_to #{mapping}_omniauth_authorize_path(:instedd, *args)
           end
 
           def authenticate_api_#{mapping}!
