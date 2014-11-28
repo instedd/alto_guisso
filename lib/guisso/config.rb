@@ -2,12 +2,13 @@ require "uri"
 
 module Guisso
   class << self
-    def setup!
-      @config = YAML.load_file("#{Rails.root}/config/guisso.yml") rescue nil
+    def setup! options={}
+      @config = YAML.load_file("#{Rails.root}/config/guisso.yml") rescue {}
+      @config.merge! options
     end
 
     def enabled?
-      @config && @config["enabled"]
+      @config["enabled"]
     end
 
     def url
