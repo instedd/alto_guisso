@@ -1,13 +1,11 @@
 module Guisso
   class Api
-    class BasicAuth < Api
-      def initialize(username, password, host, https)
-        @auth = {username: username, password: password}
-        @host = host
-        self.use_https = https
-      end
+    class BasicAuth
+      attr_accessor :api
 
-      protected
+      def initialize(username, password)
+        @auth = {username: username, password: password}
+      end
 
       def execute(method, url, query, payload)
         options = {
@@ -15,7 +13,7 @@ module Guisso
           :password => @auth[:password],
 
           :method => method,
-          :url => self.url(url, query)
+          :url => api.url(url, query)
         }
 
         options[:payload] = payload if payload
@@ -24,7 +22,7 @@ module Guisso
           # follow-redirections on POST (required for import wizard)
           # but ignore payload (file)
           if request.method == :post && [301, 302, 307].include?(response.code)
-            self.get(response.headers[:location])
+            api.get(response.headers[:location])
           else
             response.return!(request, result, &block)
           end

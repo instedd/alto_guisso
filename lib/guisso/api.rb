@@ -17,8 +17,15 @@ module Guisso
   class Api
     # RestClient.log = 'stdout'
 
+    def initialize(executor, host, https)
+      @executor = executor
+      @executor.api = self
+      @host = host
+      self.use_https = https
+    end
+
     def self.basic_auth(username, password, host = nil, https = nil)
-      BasicAuth.new(username, password, host, https)
+      self.new(BasicAuth.new(username, password), host, https)
     end
 
     def self.from_authorization_code(authorization_code, redirect_uri, host = nil, https = nil)
@@ -67,9 +74,8 @@ module Guisso
     end
 
     def self.oauth(access_token, host, https)
-      Oauth.new(access_token, host, https)
+      self.new(Oauth.new(access_token), host, https)
     end
-
 
     def use_https=(https)
       @protocol = https ? 'https' : 'http'
@@ -136,16 +142,15 @@ module Guisso
       JSON.parse response
     end
 
-    def json_post(url, query = {})
-      response = post("#{url}.json", query)
-      JSON.parse response unless response.blank?
+    def execute(*args)
+      @executor.execute(*args)
     end
-
-    protected
 
     def do_get(url, query = {})
       execute(:get, url, query, nil)
     end
+
+    protected
 
     def process_response(response)
       return response if response.is_a?(String) # with basic it seems to return the body

@@ -1,13 +1,11 @@
 module Guisso
   class Api
-    class Oauth < Api
-      def initialize(access_token, host, https)
-        @token = access_token
-        @host = host
-        self.use_https = https
-      end
+    class Oauth
+      attr_accessor :api
 
-      protected
+      def initialize(access_token)
+        @token = access_token
+      end
 
       def execute(method, url, query, payload)
         tmp_dir = "#{Rails.root}/tmp/guisso_api"
@@ -32,16 +30,10 @@ module Guisso
           end
         end
 
-        # if method == :get
-          # response = @token.get url(url, query) #, nil, processed_payload, nil
-          # response = @token.get method, url(url, query)#, nil, processed_payload, nil
-        response = @token.httpclient.request method, url(url, query), nil, processed_payload, nil
-        # else
-          # raise "not supported #{request}"
-        # end
+        response = @token.httpclient.request method, api.url(url, query), nil, processed_payload, nil
 
         if method == :post && [301, 302, 307].include?(response.code)
-          self.do_get(response.headers["Location"])
+          api.do_get(response.headers["Location"])
         else
           response
         end
