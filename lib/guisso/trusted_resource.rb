@@ -31,7 +31,7 @@ module Guisso
     end
 
     def absolute_url(path)
-      @uri + path
+      Guisso.uri + path
     end
   end
 end
