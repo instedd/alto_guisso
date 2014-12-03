@@ -126,7 +126,7 @@ module Guisso
         u, q = u.split("?")
         query_bytesize = q.bytesize
       else
-        query_bytesize = URI.encode_www_form(q).bytesize
+        query_bytesize = q.to_query.bytesize
       end
 
       # TODO maybe setup and option for json extension
