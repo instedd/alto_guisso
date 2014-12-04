@@ -114,8 +114,8 @@ module Guisso
       process_response(execute(:put, url, nil, body))
     end
 
-    def delete(url)
-      process_response(execute(:delete, url, nil, nil))
+    def delete(url, body = {})
+      process_response(execute(:delete, url, nil, body))
     end
 
     def json(url, query = {})
