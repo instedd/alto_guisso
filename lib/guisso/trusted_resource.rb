@@ -30,6 +30,14 @@ module Guisso
       @token.post absolute_url(path), body: body, &block
     end
 
+    def put(path, body, &block)
+      @token.put absolute_url(path), body: body, &block
+    end
+
+    def delete(path, &block)
+      @token.delete absolute_url(path), &block
+    end
+
     def absolute_url(path)
       Guisso.uri + path
     end
