@@ -124,7 +124,7 @@ module Guisso
 
       if u.index("?") && q == {}
         u, q = u.split("?")
-        query_bytesize = q.bytesize
+        query_bytesize = q.nil? ? 0 : q.bytesize
       else
         query_bytesize = q.to_query.bytesize
       end
