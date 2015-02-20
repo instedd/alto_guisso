@@ -19,7 +19,10 @@ module Guisso
 
   class TrustedResource
     def initialize(url, user_email)
-      @token = Guisso.oauth_client.access_token! scope: %W(app=#{URI(url).host} user=#{user_email})
+      uri = URI(url)
+      host_and_port = uri.host
+      host_and_port << ":#{uri.port}" unless uri.port == uri.default_port
+      @token = Guisso.oauth_client.access_token! scope: %W(app=#{host_and_port} user=#{user_email})
     end
 
     def get(path)
