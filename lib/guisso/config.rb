@@ -8,11 +8,11 @@ module Guisso
     end
 
     def enabled?
-      @config["enabled"]
+      ENV["GUISSO_ENABLED"] == "true" || @config["enabled"]
     end
 
     def url
-      @config["url"]
+      ENV["GUISSO_URL"] || @config["url"]
     end
 
     def uri
@@ -44,11 +44,11 @@ module Guisso
     end
 
     def client_id
-      @config["client_id"]
+      ENV["GUISSO_CLIENT_ID"] || @config["client_id"]
     end
 
     def client_secret
-      @config["client_secret"]
+      ENV["GUISSO_CLIENT_SECRET"] || @config["client_secret"]
     end
   end
 end
