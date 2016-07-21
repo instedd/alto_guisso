@@ -3,7 +3,11 @@ require "uri"
 module Guisso
   class << self
     def setup! options={}
-      @config = YAML.load_file("#{Rails.root}/config/guisso.yml") rescue {}
+      if defined?(::Settings) && (guisso = ::Settings.guisso)
+        @config = guisso.to_h
+      else
+        @config = YAML.load_file("#{Rails.root}/config/guisso.yml") rescue {}
+      end
       @config.merge! options
     end
 
