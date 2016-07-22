@@ -4,7 +4,7 @@ module Guisso
   class << self
     def setup! options={}
       if defined?(::Settings) && (guisso = ::Settings.guisso)
-        @config = guisso.to_h
+        @config = guisso.to_h.with_indifferent_access
       else
         @config = YAML.load_file("#{Rails.root}/config/guisso.yml") rescue {}
       end
