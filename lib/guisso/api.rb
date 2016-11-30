@@ -46,7 +46,7 @@ module Guisso
 
     def self.from_oauth_client(host, https, options = {})
       if host !~ /\Ahttp:|https:/
-        app_uri = URI("http://#{host}")
+        app_uri = URI("#{https ? "https" : "http"}://#{host}")
       else
         app_uri = URI(host)
       end
